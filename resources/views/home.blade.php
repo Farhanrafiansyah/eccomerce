@@ -8,7 +8,7 @@
     <!-- Bootstrap ganti ke Bootswatch Pulse -->
     <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/pulse/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Tambahan CSS biar lebih kece -->
+
     <style>
         body {
             background: #f8f9fa;
