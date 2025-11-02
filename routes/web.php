@@ -37,7 +37,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // User: Checkout
 // ========================
 Route::middleware('auth')->group(function () {
+    Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
+    Route::get('/checkout/product/{product}', [CheckoutController::class, 'showProduct'])->name('checkout.product');
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::post('/checkout/single', [CheckoutController::class, 'processSingleProduct'])->name('checkout.process.single');
     Route::get('/checkout/success/{order}', [OrderController::class, 'checkoutSuccess'])->name('checkout.success');
 });
 
@@ -48,6 +51,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Dashboard
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+
+    // Orders Management
+    Route::get('/orders', [AdminController::class, 'orders'])->name('orders');
+    Route::patch('/orders/{order}/payment-status', [AdminController::class, 'updatePaymentStatus'])->name('orders.payment-status');
 
     // CRUD Produk
     Route::get('/products', [AdminController::class, 'products'])->name('products');

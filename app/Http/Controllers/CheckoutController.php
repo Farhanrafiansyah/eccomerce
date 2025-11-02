@@ -16,8 +16,25 @@ class CheckoutController extends Controller
         return view('checkout.form', compact('products'));
     }
 
+    public function showProduct($productId)
+    {
+        $product = Product::findOrFail($productId);
+        
+        // Check if product has stock
+        if ($product->stock <= 0) {
+            return redirect()->back()->with('error', 'Produk ini sedang habis stok.');
+        }
+        
+        return view('checkout.single-product', compact('product'));
+    }
+
   public function process(Request $request)
 {
+    // Validate payment method
+    $request->validate([
+        'payment_method' => 'required|in:cash,bank_transfer,gopay,ovo,dana,shopee_pay'
+    ]);
+
     $total = 0;
     $items = [];
 
@@ -44,9 +61,14 @@ class CheckoutController extends Controller
         return redirect()->back()->with('error', 'Tidak ada produk yang dipilih.');
     }
 
+    // Determine payment status based on payment method
+    $paymentStatus = ($request->payment_method === 'cash') ? 'pending' : 'awaiting_payment';
+
     $order = Order::create([
         'user_id' => Auth::id(),
-        'total' => $total
+        'total' => $total,
+        'payment_method' => $request->payment_method,
+        'payment_status' => $paymentStatus
     ]);
 
     foreach ($items as $item) {
@@ -62,6 +84,50 @@ class CheckoutController extends Controller
     }
 
     // Ubah redirect ke halaman sukses
+    return redirect()->route('checkout.success', $order->id);
+}
+
+public function processSingleProduct(Request $request)
+{
+    // Validate payment method and product data
+    $request->validate([
+        'payment_method' => 'required|in:cash,bank_transfer,gopay,ovo,dana,shopee_pay',
+        'product_id' => 'required|exists:products,id',
+        'quantity' => 'required|integer|min:1'
+    ]);
+
+    $product = Product::findOrFail($request->product_id);
+    $quantity = $request->quantity;
+
+    // Check stock availability
+    if ($product->stock < $quantity) {
+        return redirect()->back()->with('error', "Stok untuk {$product->name} tidak cukup. Stok tersisa: {$product->stock}");
+    }
+
+    $total = $product->price * $quantity;
+
+    // Determine payment status based on payment method
+    $paymentStatus = ($request->payment_method === 'cash') ? 'pending' : 'awaiting_payment';
+
+    $order = Order::create([
+        'user_id' => Auth::id(),
+        'total' => $total,
+        'payment_method' => $request->payment_method,
+        'payment_status' => $paymentStatus
+    ]);
+
+    // Create order item
+    OrderItem::create([
+        'order_id' => $order->id,
+        'product_id' => $product->id,
+        'quantity' => $quantity,
+        'price' => $product->price
+    ]);
+
+    // Update product stock
+    $product->stock -= $quantity;
+    $product->save();
+
     return redirect()->route('checkout.success', $order->id);
 }
 }

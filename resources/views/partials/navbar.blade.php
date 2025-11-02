@@ -8,6 +8,9 @@
         <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
             <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
                 @auth
+                    <li class="nav-item me-2">
+                        <a href="{{ route('checkout.show') }}" class="btn btn-success btn-sm">🛒 Checkout Multiple</a>
+                    </li>
                     @if(Auth::user()->is_admin)
                         <li class="nav-item me-2">
                             <a href="{{ route('admin.dashboard') }}" class="btn btn-warning btn-sm">Admin</a>

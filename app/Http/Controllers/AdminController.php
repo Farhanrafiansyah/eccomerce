@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Order;
 
 class AdminController extends Controller
 {
@@ -108,5 +109,34 @@ class AdminController extends Controller
 
         return redirect()->route('admin.products')
             ->with('success', 'Produk berhasil dihapus');
+    }
+
+    /**
+     * List Orders
+     */
+    public function orders()
+    {
+        $orders = Order::with(['user', 'items.product'])
+                      ->orderBy('created_at', 'desc')
+                      ->paginate(20);
+                      
+        return view('admin.orders.index', compact('orders'));
+    }
+
+    /**
+     * Update Payment Status
+     */
+    public function updatePaymentStatus(Request $request, Order $order)
+    {
+        $request->validate([
+            'payment_status' => 'required|in:pending,awaiting_payment,paid,failed,cancelled'
+        ]);
+
+        $order->update([
+            'payment_status' => $request->payment_status
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Status pembayaran berhasil diupdate');
     }
 }

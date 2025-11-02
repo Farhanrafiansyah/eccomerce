@@ -25,11 +25,11 @@
             @forelse($products as $product)
                 <tr>
                     <td style="width: 100px;">
-                        @if($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="Gambar Produk" class="img-fluid rounded" style="max-height: 70px;">
-                        @else
-                            <span class="text-muted fst-italic">Tidak ada gambar</span>
-                        @endif
+                        <img src="{{ $product->image_url }}" 
+                             alt="{{ $product->name }}" 
+                             class="img-fluid rounded" 
+                             style="max-height: 70px; object-fit: cover;"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=70&fit=crop&auto=format';">
                     </td>
                     <td>{{ $product->name }}</td>
                     <td>Rp{{ number_format($product->price, 0, ',', '.') }}</td>

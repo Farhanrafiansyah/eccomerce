@@ -61,10 +61,11 @@
         @foreach($products as $product)
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow border-0 rounded-3">
-                    <img src="{{ asset('storage/' . $product->image) }}" 
+                    <img src="{{ $product->image_url }}" 
                          class="card-img-top rounded-top" 
                          alt="{{ $product->name }}" 
-                         style="height: 200px; object-fit: cover;">
+                         style="height: 200px; object-fit: cover;"
+                         onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop&auto=format';">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title fw-bold">{{ $product->name }}</h5>
                         <p class="card-text">Harga: <strong>Rp{{ number_format($product->price, 0, ',', '.') }}</strong></p>
@@ -78,11 +79,7 @@
                         <div class="mt-auto">
                             @auth
                                 @if($product->stock > 0)
-                                    <form action="{{ route('checkout.process') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="quantities[{{ $product->id }}]" value="1">
-                                        <button class="btn btn-success w-100">Beli</button>
-                                    </form>
+                                    <a href="{{ route('checkout.product', $product) }}" class="btn btn-success w-100">Beli</a>
                                 @else
                                     <button class="btn btn-secondary w-100" disabled>Stok Habis</button>
                                 @endif

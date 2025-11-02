@@ -16,7 +16,9 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}">Dashboard</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ route('admin.products') }}">Produk</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('admin.orders') }}">Pesanan</a></li>
             <li class="nav-item">
               <form method="POST" action="{{ route('logout') }}">
                 @csrf
